@@ -2,18 +2,22 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/helpers/dialog.dart';
 import '../../../domain/interfaces/characters/characters_api_interface.dart';
+import '../../../domain/interfaces/episodes/episodes_api_interface.dart';
 import '../../../domain/models/characters/character.dart';
 import '../../../domain/models/characters/characters_api_resp.dart';
 import '../../molecules/card/card.dart';
 import '../../templates/template_main.dart';
+import 'widgets/serie_numbers.dart';
 
 class CharactersPage extends StatefulWidget {
   static const String routeName = '/characters';
 
   final CharactersApiInterface charactersApi;
+  final EpisodesApiInterface episodesApi;
 
   const CharactersPage({
     required this.charactersApi,
+    required this.episodesApi,
     Key? key,
   }) : super(key: key);
 
@@ -47,6 +51,7 @@ class _CharactersPageState extends State<CharactersPage> {
   Widget _buildBody() {
     return Column(
       children: <Widget>[
+        SerieNumbers(episodesApi: widget.episodesApi),
         Expanded(
           child: NotificationListener<Notification>(
             child: _buildList(),
@@ -87,7 +92,7 @@ class _CharactersPageState extends State<CharactersPage> {
         Widget response = const SizedBox.shrink();
 
         if ((number + 1) == _list.length && _nextPath != null && !_isLoading) {
-          _getCharacters(path: _nextPath!, build: true);
+          _getCharacters(path: _nextPath!, firstLoading: true);
         } else {
           response = CardWidget(character: _list[number]);
         }
@@ -109,9 +114,9 @@ class _CharactersPageState extends State<CharactersPage> {
 
   Future<void> _getCharacters({
     String path = 'https://rickandmortyapi.com/api/character',
-    bool build = false,
+    bool firstLoading = false,
   }) async {
-    if (!build) {
+    if (!firstLoading) {
       _isLoading = true;
       setState(() {});
     }
@@ -145,7 +150,10 @@ class _CharactersPageState extends State<CharactersPage> {
       _list = _list + apiCharacters.results!;
     }
 
-    _isLoading = false;
+    if (!firstLoading) {
+      _isLoading = false;
+    }
+
     setState(() {});
   }
 }

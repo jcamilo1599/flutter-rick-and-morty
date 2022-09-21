@@ -1,9 +1,9 @@
 import '../../models/characters/characters_api_resp_info.dart';
 
-class CharacterApiRespInfoMapper {
+class CharactersApiRespInfoMapper {
   Map<String, dynamic> data;
 
-  CharacterApiRespInfoMapper(this.data);
+  CharactersApiRespInfoMapper(this.data);
 
   CharactersApiRespInfoModel execute() => CharactersApiRespInfoModel(
         next: data['next'],

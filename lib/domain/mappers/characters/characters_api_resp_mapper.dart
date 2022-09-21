@@ -16,7 +16,7 @@ class CharactersApiRespMapper {
         : null;
 
     return CharactersApiRespModel(
-      info: CharacterApiRespInfoMapper(data['info']).execute(),
+      info: CharactersApiRespInfoMapper(data['info']).execute(),
       results: characters,
     );
   }

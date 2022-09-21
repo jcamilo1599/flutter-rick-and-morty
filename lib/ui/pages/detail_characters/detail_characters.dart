@@ -31,10 +31,13 @@ class _CharactersDetailPageState extends State<CharactersDetailPage> {
                 width: double.infinity,
                 height: 400,
               ),
-              Container(
-                width: double.infinity,
-                height: 300,
-                color: Colors.deepOrangeAccent,
+              Material(
+                elevation: 2,
+                child: Container(
+                  width: double.infinity,
+                  height: 300,
+                  color: Colors.deepOrangeAccent,
+                ),
               ),
               Positioned(
                 left: 0,
