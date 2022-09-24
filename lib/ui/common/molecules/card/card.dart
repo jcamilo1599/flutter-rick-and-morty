@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/models/characters/character.dart';
-import '../../pages/detail_characters/detail_characters.dart';
+import '../../../../domain/models/characters/character.dart';
+import '../../../pages/detail_characters/detail_characters.dart';
 
 class CardWidget extends StatelessWidget {
   final CharacterModel character;

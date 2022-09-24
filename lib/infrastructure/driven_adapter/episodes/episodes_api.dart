@@ -4,13 +4,13 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
-import '../../../domain/interfaces/episodes/episodes_api_interface.dart';
-import '../../../domain/mappers/episodes/episodes_api_resp_mapper.dart';
 import '../../../domain/models/episodes/episodes_api_resp.dart';
+import '../../../domain/models/episodes/gateway/episodes_api_gateway.dart';
+import '../../mappers/episodes/episodes_api_resp_mapper.dart';
 
-class EpisodesListApi implements EpisodesApiInterface {
+class EpisodesApi implements EpisodesApiGateway {
   @override
-  Future<EpisodesApiRespModel> execute() async {
+  Future<EpisodesApiRespModel> getEpisodes() async {
     EpisodesApiRespModel response;
 
     try {

@@ -1,31 +1,24 @@
 import 'package:flutter/material.dart';
 
+import '../../../config/use_case_config.dart';
 import '../../../domain/helpers/dialog.dart';
-import '../../../domain/interfaces/characters/characters_api_interface.dart';
-import '../../../domain/interfaces/episodes/episodes_api_interface.dart';
 import '../../../domain/models/characters/character.dart';
 import '../../../domain/models/characters/characters_api_resp.dart';
-import '../../molecules/card/card.dart';
+import '../../common/molecules/card/card.dart';
 import '../../templates/template_main.dart';
 import 'widgets/serie_numbers.dart';
 
 class CharactersPage extends StatefulWidget {
   static const String routeName = '/characters';
 
-  final CharactersApiInterface charactersApi;
-  final EpisodesApiInterface episodesApi;
-
-  const CharactersPage({
-    required this.charactersApi,
-    required this.episodesApi,
-    Key? key,
-  }) : super(key: key);
+  const CharactersPage({Key? key}) : super(key: key);
 
   @override
   _CharactersPageState createState() => _CharactersPageState();
 }
 
 class _CharactersPageState extends State<CharactersPage> {
+  final UseCaseConfig _config = UseCaseConfig();
   final ScrollController _scrollController = ScrollController();
   List<CharacterModel> _list = <CharacterModel>[];
   bool _isLoading = false;
@@ -51,7 +44,7 @@ class _CharactersPageState extends State<CharactersPage> {
   Widget _buildBody() {
     return Column(
       children: <Widget>[
-        SerieNumbers(episodesApi: widget.episodesApi),
+        const SerieNumbers(),
         Expanded(
           child: NotificationListener<Notification>(
             child: _buildList(),
@@ -59,11 +52,9 @@ class _CharactersPageState extends State<CharactersPage> {
               final bool endOfScroll = _scrollController.position.pixels >=
                   (_scrollController.position.maxScrollExtent - 10);
 
-              if (endOfScroll && !_isLoading) {
+              if (endOfScroll && !_isLoading && _nextPath != null) {
+                _getCharacters(path: _nextPath!);
                 _isLoading = true;
-                setState(() {});
-              } else if (!endOfScroll && _isLoading) {
-                _isLoading = false;
                 setState(() {});
               }
 
@@ -72,9 +63,24 @@ class _CharactersPageState extends State<CharactersPage> {
           ),
         ),
         if (_isLoading)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 30),
-            child: _buildLoading(),
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(30)),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: Colors.grey,
+                  blurRadius: 20,
+                  offset: Offset(0, -10),
+                )
+              ],
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 30, 0, 10),
+                child: _buildLoading(),
+              ),
+            ),
           )
         else
           const SizedBox.shrink(),
@@ -88,17 +94,8 @@ class _CharactersPageState extends State<CharactersPage> {
       itemCount: _list.length,
       controller: _scrollController,
       padding: const EdgeInsets.symmetric(vertical: 20),
-      itemBuilder: (BuildContext context, int number) {
-        Widget response = const SizedBox.shrink();
-
-        if ((number + 1) == _list.length && _nextPath != null && !_isLoading) {
-          _getCharacters(path: _nextPath!, firstLoading: true);
-        } else {
-          response = CardWidget(character: _list[number]);
-        }
-
-        return response;
-      },
+      itemBuilder: (BuildContext context, int number) =>
+          CardWidget(character: _list[number]),
     );
   }
 
@@ -113,36 +110,16 @@ class _CharactersPageState extends State<CharactersPage> {
   }
 
   Future<void> _getCharacters({
-    String path = 'https://rickandmortyapi.com/api/character',
-    bool firstLoading = false,
+    String? path = 'https://rickandmortyapi.com/api/character',
   }) async {
-    if (!firstLoading) {
-      _isLoading = true;
-      setState(() {});
-    }
-
     final CharactersApiRespModel apiCharacters =
-        await widget.charactersApi.execute(path: path);
+        await _config.charactersUseCase.getCharacters(path!);
 
     _nextPath = apiCharacters.info?.next;
 
     // En caso de tener un mensaje de error
     if (apiCharacters.message != null) {
-      await dialog(
-        context: context,
-        title: 'Upps...',
-        description: apiCharacters.message!,
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _getCharacters();
-              _isLoading = false;
-            },
-            child: const Text('Reintentar'),
-          ),
-        ],
-      );
+      _openDialog(message: apiCharacters.message!);
     }
 
     // Si obtiene resultados
@@ -150,10 +127,25 @@ class _CharactersPageState extends State<CharactersPage> {
       _list = _list + apiCharacters.results!;
     }
 
-    if (!firstLoading) {
-      _isLoading = false;
-    }
-
+    _isLoading = false;
     setState(() {});
+  }
+
+  void _openDialog({required String message}) {
+    dialog(
+      context: context,
+      title: 'Upps...',
+      description: message,
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            _getCharacters(path: _nextPath);
+            _isLoading = false;
+          },
+          child: const Text('Reintentar'),
+        ),
+      ],
+    );
   }
 }

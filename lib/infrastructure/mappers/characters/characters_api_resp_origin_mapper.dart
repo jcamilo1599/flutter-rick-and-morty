@@ -1,4 +1,4 @@
-import '../../models/characters/characters_api_resp_origin.dart';
+import '../../../domain/models/characters/characters_api_resp_origin.dart';
 
 class CharactersApiRespOriginMapper {
   Map<String, dynamic> data;

@@ -1,4 +1,4 @@
-import '../../models/episodes/episodes_api_resp.dart';
+import '../../../domain/models/episodes/episodes_api_resp.dart';
 import 'episodes_api_resp_info_mapper.dart';
 
 class EpisodesApiRespMapper {

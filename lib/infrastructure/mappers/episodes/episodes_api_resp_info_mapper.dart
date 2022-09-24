@@ -1,4 +1,4 @@
-import '../../models/episodes/episodes_api_resp_info.dart';
+import '../../../domain/models/episodes/episodes_api_resp_info.dart';
 
 class EpisodesApiRespInfoMapper {
   Map<String, dynamic> data;

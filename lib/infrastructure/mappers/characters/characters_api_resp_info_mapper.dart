@@ -1,4 +1,4 @@
-import '../../models/characters/characters_api_resp_info.dart';
+import '../../../domain/models/characters/characters_api_resp_info.dart';
 
 class CharactersApiRespInfoMapper {
   Map<String, dynamic> data;

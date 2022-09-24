@@ -1,5 +1,5 @@
-import '../../models/characters/character.dart';
-import '../../models/characters/characters_api_resp.dart';
+import '../../../domain/models/characters/character.dart';
+import '../../../domain/models/characters/characters_api_resp.dart';
 import 'character_mapper.dart';
 import 'characters_api_resp_info_mapper.dart';
 

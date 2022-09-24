@@ -1,4 +1,4 @@
-import '../../models/characters/character.dart';
+import '../../../domain/models/characters/character.dart';
 import 'characters_api_resp_location_mapper.dart';
 import 'characters_api_resp_origin_mapper.dart';
 

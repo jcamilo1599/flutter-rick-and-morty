@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../../../../config/use_case_config.dart';
 import '../../../../domain/helpers/dialog.dart';
-import '../../../../domain/interfaces/episodes/episodes_api_interface.dart';
 import '../../../../domain/models/episodes/episodes_api_resp.dart';
 
 class SerieNumbers extends StatefulWidget {
-  final EpisodesApiInterface episodesApi;
-
-  const SerieNumbers({
-    required this.episodesApi,
-    Key? key,
-  }) : super(key: key);
+  const SerieNumbers({Key? key}) : super(key: key);
 
   @override
   State<SerieNumbers> createState() => _SerieNumbersState();
 }
 
 class _SerieNumbersState extends State<SerieNumbers> {
+  final UseCaseConfig _config = UseCaseConfig();
   int _episodes = 0;
   bool _loadingEpisodes = true;
 
@@ -88,25 +84,12 @@ class _SerieNumbersState extends State<SerieNumbers> {
   }
 
   Future<void> _getEpisodes() async {
-    final EpisodesApiRespModel apiEpisodes = await widget.episodesApi.execute();
+    final EpisodesApiRespModel apiEpisodes =
+        await _config.episodesUseCase.getEpisodes();
 
     // En caso de tener un mensaje de error
     if (apiEpisodes.message != null) {
-      await dialog(
-        context: context,
-        title: 'Upps...',
-        description: apiEpisodes.message!,
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _getEpisodes();
-              _loadingEpisodes = false;
-            },
-            child: const Text('Reintentar'),
-          ),
-        ],
-      );
+      _openDialog(message: apiEpisodes.message!);
     }
 
     // Si obtiene resultados
@@ -116,5 +99,23 @@ class _SerieNumbersState extends State<SerieNumbers> {
 
     _loadingEpisodes = false;
     setState(() {});
+  }
+
+  void _openDialog({required String message}) {
+    dialog(
+      context: context,
+      title: 'Upps...',
+      description: message,
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            _getEpisodes();
+            _loadingEpisodes = false;
+          },
+          child: const Text('Reintentar'),
+        ),
+      ],
+    );
   }
 }

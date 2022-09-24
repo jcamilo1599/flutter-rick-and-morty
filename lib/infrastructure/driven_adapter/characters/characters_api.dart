@@ -4,19 +4,20 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
-import '../../../domain/interfaces/characters/characters_api_interface.dart';
-import '../../../domain/mappers/characters/characters_api_resp_mapper.dart';
 import '../../../domain/models/characters/characters_api_resp.dart';
+import '../../../domain/models/characters/gateway/characters_api_gateway.dart';
+import '../../mappers/characters/characters_api_resp_mapper.dart';
 
-class CharactersListApi implements CharactersApiInterface {
+class CharactersApi implements CharactersApiGateway {
   @override
-  Future<CharactersApiRespModel> execute({required String path}) async {
+  Future<CharactersApiRespModel> getCharacters({required String path}) async {
     CharactersApiRespModel response;
 
     try {
       final Uri url = Uri.parse(path);
       final http.Response httpResponse = await http.get(url);
-      final CharactersApiRespMapper charactersApiMapper = CharactersApiRespMapper(
+      final CharactersApiRespMapper charactersApiMapper =
+          CharactersApiRespMapper(
         json.decode(utf8.decode(httpResponse.bodyBytes)),
       );
 
